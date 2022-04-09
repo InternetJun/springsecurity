@@ -1,0 +1,37 @@
+server:
+  port: 8000
+
+#  怎么给这个项目自动添加一个名字呢？对每个页面都有一定的处理了。
+  servlet.context-path: /
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/security?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT
+    username: root
+    password: 123456
+    type: com.alibaba.druid.pool.DruidDataSource
+#    Java Persistence API
+#    缓存数据
+#  redis:
+#    host: 192.168.219.128
+#    port: 6379
+#    database: 1
+swagger:
+  application-name: securityDemo
+  application-version: 1.0
+  application-description: springfox swagger 3.0整合Demo
+
+mybatisplus:
+  enabled: true
+  generic:
+    enabled: true
+  dialectType: mysql
+#  扫描的路径
+
+  mybatis.mapper-locations: classpath*:mapper/*.xml
+  logging:
+    level: debug
+  global-config:
+    db-config:
+      table-underline: true
+

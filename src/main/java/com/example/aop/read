@@ -1,0 +1,14 @@
+1.要实现aop的日志切面有以下要注意的点：
+1）多处要实现一个切面的时候，最好使用一个注解，例如：
+    我实现了对一个人的crud的记录。insertTime还有的是什么呢？
+2）利用的是一个JointPoint；返回值是Value；注解里也是有注解的。
+3）怎么插入到数据库的？
+~~~ sql
+select distinct method (
+    select count(method) over(partication by method) group by...
+)
+~~~
+我的疑问：
+**动态代理是怎么实现的？**
+**还有文件的处理是什么呢？**：
+
