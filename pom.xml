@@ -109,6 +109,13 @@
             <artifactId>poi-ooxml</artifactId>
             <version>4.1.2</version>
         </dependency>
+
+        <!--高性能的多线程-->
+        <dependency>
+            <groupId>org.jctools</groupId>
+            <artifactId>jctools-core</artifactId>
+            <version>3.3.0</version>
+        </dependency>
     </dependencies>
 
     <build>
