@@ -1,15 +1,15 @@
 package com.example.leetcode;
 
 public class TreeNode {
-    int val;
-    TreeNode left;
-    TreeNode right;
+    public int val;
+    public TreeNode left;
+    public TreeNode right;
     TreeNode() {}
     TreeNode(int val) { this.val = val; }
-    TreeNode(int val, TreeNode left, TreeNode right) {
+    public TreeNode(int val, int left, int right) {
         this.val = val;
-        this.left = left;
-        this.right = right;
+        this.left = new TreeNode(left);
+        this.right = new TreeNode(right);
     }
 
     @Override
@@ -20,4 +20,6 @@ public class TreeNode {
                 ", right=" + right +
                 '}';
     }
+
+    // serial treenode 为null的时候就是一个基本的数据
 }
