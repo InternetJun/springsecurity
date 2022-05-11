@@ -6,6 +6,9 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Leet563 {
     /**
@@ -103,6 +106,61 @@ public class Leet563 {
         root.children.get(0).children = Arrays.asList(last);
         System.out.println(maxDepth(root));
 
+        List<String> strings = new ArrayList<>();
+    }
+
+    @Test
+    public void ms()  {
+        ExecutorService pool = Executors.newFixedThreadPool(5);
+        // 处理1000内的计数。
+
+        int[] ints = new int[1000];
+        for (int i = 0; i < 1000; i++) {
+            ints[i] = i;
+        }
+        List<Integer> result = new ArrayList<>();
+        CompletableFuture future1 = CompletableFuture.runAsync(()->{
+            // 计算1~100；101~200；201~300
+            System.out.println(Thread.currentThread().getName());
+            int sum = 0;
+            for (int i = 1; i < 100; i++) {
+                sum += ints[i];
+            }
+            result.add(sum);
+        },pool);
+
+        CompletableFuture future2 = CompletableFuture.runAsync(()->{
+            // 计算1~100；101~200；201~300
+            System.out.println(Thread.currentThread().getName());
+            int sum = 0;
+            for (int i = 500; i < 600; i++) {
+                sum += ints[i];
+            }
+            result.add(sum);
+        },pool);
+
+        CompletableFuture future3 = CompletableFuture.runAsync(()->{
+            // 计算1~100；101~200；201~300
+            System.out.println(Thread.currentThread().getName());
+            int sum = 0;
+            for (int i = 101; i < 200; i++) {
+                sum += ints[i];
+            }
+            result.add(sum);
+        },pool);
+
+        CompletableFuture future4 = CompletableFuture.runAsync(()->{
+            // 计算1~100；101~200；201~300
+            System.out.println(Thread.currentThread().getName());
+            int sum = 0;
+            for (int i = 201; i < 300; i++) {
+                sum += ints[i];
+            }
+            result.add(sum);
+        },pool);
+
+        CompletableFuture.allOf(future1, future2, future3, future4);
+        System.out.println(result);
     }
 
 }
