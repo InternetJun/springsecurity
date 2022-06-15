@@ -3,6 +3,10 @@ package com.example.pojo;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,6 +23,8 @@ public class User implements UserDetails {
     private String username;
     private String password;
     private String image;
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)		// 反序列化
+    @JsonSerialize(using = LocalDateTimeSerializer.class)		// 序列化
     private LocalDateTime addTime;
     private List<Role> roles;
     private String rid;

@@ -1,9 +1,15 @@
 package com.example.config;
 
+import com.example.fliter.LoginFilter;
+import com.example.fliter.VerificationCodeFilter;
+import com.example.model.RespBean;
+import com.example.pojo.User;
 import com.example.service.UserDetailServiceImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.*;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -11,14 +17,18 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.session.ConcurrentSessionControlAuthenticationStrategy;
+
+import java.io.PrintWriter;
 
 @Configuration
 public class Config extends WebSecurityConfigurerAdapter {
 
     //    @Autowired
 //    private MyAccessDeniedHandler myAccessDeniedHandler;
-//    @Autowired
-//    VerificationCodeFilter verificationCodeFilter;
+    @Autowired
+    VerificationCodeFilter verificationCodeFilter;
 
     //    @Autowired
 //    private PersistentTokenRepository persistentTokenRepository;
@@ -54,32 +64,24 @@ public class Config extends WebSecurityConfigurerAdapter {
 
 
 
-//    @Override
-//    protected void configure(HttpSecurity http) throws Exception {
-////        HttpSecurity httpSecurity = http.addFilterBefore(verificationCodeFilter, UsernamePasswordAuthenticationFilter.class);
-//        http.authorizeRequests()
-//                //允许根路径url的访问
-//                .antMatchers("/").permitAll()
-//                //允许swagger-ui.html访问
-//                .antMatchers("/swagger-ui.html").permitAll()
-//                .anyRequest().authenticated()
-//                .and()
-//                .logout().permitAll()
-//                .and()
-//                .formLogin().permitAll();
-//
-//        //对防火的关闭
-//        http.csrf().disable();
-//
-//        //处理权限不足问题,没有登录的问题是该怎么解决的？
-////        http.exceptionHandling()
-////                .accessDeniedHandler(myAccessDeniedHandler);
-////        http.authorizeRequests();
-//        //记住我
-////        http.rememberMe()
-////                .userDetailsService(userDetailServiceImpl)
-////                .tokenRepository(persistentTokenRepository);
-//    }
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        //对防火的关闭
+        http.csrf().disable();
+        HttpSecurity httpSecurity = http.addFilterBefore(verificationCodeFilter, UsernamePasswordAuthenticationFilter.class);
+//        http.formLogin().loginPage("/ogin").loginProcessingUrl("/doLogin");
+
+
+
+        //处理权限不足问题,没有登录的问题是该怎么解决的？
+//        http.exceptionHandling()
+//                .accessDeniedHandler(myAccessDeniedHandler);
+//        http.authorizeRequests();
+        //记住我
+//        http.rememberMe()
+//                .userDetailsService(userDetailServiceImpl)
+//                .tokenRepository(persistentTokenRepository);
+    }
 
     //静态资源配置
     @Override
@@ -94,49 +96,49 @@ public class Config extends WebSecurityConfigurerAdapter {
 
     }
 
-//    @Bean
-//    LoginFilter loginFilter() throws Exception {
-//        LoginFilter loginFilter = new LoginFilter();
-//        loginFilter.setAuthenticationSuccessHandler((request, response, authentication) -> {
-//                    response.setContentType("application/json;charset=utf-8");
-//                    PrintWriter out = response.getWriter();
-//                    User hr = (User) authentication.getPrincipal();
-//                    hr.setPassword(null);
-//                    RespBean ok = RespBean.ok("登录成功!", hr);
-//                    String s = new ObjectMapper().writeValueAsString(ok);
-//                    out.write(s);
-//                    out.flush();
-//                    out.close();
-//                }
-//        );
-//        loginFilter.setAuthenticationFailureHandler((request, response, exception) -> {
-//                    response.setContentType("application/json;charset=utf-8");
-//                    PrintWriter out = response.getWriter();
-//                    RespBean respBean = RespBean.error(exception.getMessage());
-//                    if (exception instanceof LockedException) {
-//                        respBean.setMsg("账户被锁定，请联系管理员!");
-//                    } else if (exception instanceof CredentialsExpiredException) {
-//                        respBean.setMsg("密码过期，请联系管理员!");
-//                    } else if (exception instanceof AccountExpiredException) {
-//                        respBean.setMsg("账户过期，请联系管理员!");
-//                    } else if (exception instanceof DisabledException) {
-//                        respBean.setMsg("账户被禁用，请联系管理员!");
-//                    } else if (exception instanceof BadCredentialsException) {
-//                        respBean.setMsg("用户名或者密码输入错误，请重新输入!");
-//                    }
-//                    out.write(new ObjectMapper().writeValueAsString(respBean));
-//                    out.flush();
-//                    out.close();
-//                }
-//        );
-//        loginFilter.setAuthenticationManager(authenticationManagerBean());
-//        loginFilter.setFilterProcessesUrl("/doLogin");
-//        ConcurrentSessionControlAuthenticationStrategy sessionStrategy =
-//                new ConcurrentSessionControlAuthenticationStrategy(sessionRegistry());
-//        sessionStrategy.setMaximumSessions(1);
-//        loginFilter.setSessionAuthenticationStrategy(sessionStrategy);
-//        return loginFilter;
-//    }
+    @Bean
+     LoginFilter loginFilter() throws Exception {
+        LoginFilter loginFilter = new LoginFilter();
+        loginFilter.setAuthenticationSuccessHandler((request, response, authentication) -> {
+                    response.setContentType("application/json;charset=utf-8");
+                    PrintWriter out = response.getWriter();
+                    User hr = (User) authentication.getPrincipal();
+                    hr.setPassword(null);
+                    RespBean ok = RespBean.ok("登录成功!", hr);
+                    String s = new ObjectMapper().writeValueAsString(ok);
+                    out.write(s);
+                    out.flush();
+                    out.close();
+                }
+        );
+        loginFilter.setAuthenticationFailureHandler((request, response, exception) -> {
+                    response.setContentType("application/json;charset=utf-8");
+                    PrintWriter out = response.getWriter();
+                    RespBean respBean = RespBean.error(exception.getMessage());
+                    if (exception instanceof LockedException) {
+                        respBean.setMsg("账户被锁定，请联系管理员!");
+                    } else if (exception instanceof CredentialsExpiredException) {
+                        respBean.setMsg("密码过期，请联系管理员!");
+                    } else if (exception instanceof AccountExpiredException) {
+                        respBean.setMsg("账户过期，请联系管理员!");
+                    } else if (exception instanceof DisabledException) {
+                        respBean.setMsg("账户被禁用，请联系管理员!");
+                    } else if (exception instanceof BadCredentialsException) {
+                        respBean.setMsg("用户名或者密码输入错误，请重新输入!");
+                    }
+                    out.write(new ObjectMapper().writeValueAsString(respBean));
+                    out.flush();
+                    out.close();
+                }
+        );
+        loginFilter.setAuthenticationManager(authenticationManagerBean());
+        loginFilter.setFilterProcessesUrl("/doLogin");
+        ConcurrentSessionControlAuthenticationStrategy sessionStrategy =
+                new ConcurrentSessionControlAuthenticationStrategy(sessionRegistry());
+        sessionStrategy.setMaximumSessions(1);
+        loginFilter.setSessionAuthenticationStrategy(sessionStrategy);
+        return loginFilter;
+    }
 
     @Bean
     SessionRegistryImpl sessionRegistry() {

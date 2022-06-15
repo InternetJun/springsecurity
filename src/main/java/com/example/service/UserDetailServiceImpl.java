@@ -37,9 +37,15 @@ public class UserDetailServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException("用户名不存在！");
         }
         // 存放权限
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        String encode = bCryptPasswordEncoder.encode(user.getPassword());
+        if (!encode.equals(user.getPassword())) {
+            user.setPassword(encode);
+        }
         List<Role> userRolesById = userMapper.getUserRolesById(user.getId());
         user.setRoles(userRolesById);
-        return new org.springframework.security.core.userdetails
-                .User(user.getUsername(),new BCryptPasswordEncoder().encode(user.getPassword()), user.getAuthorities());
+        return user;
+//        return new org.springframework.security.core.userdetails
+//                .User(user.getUsername(),new BCryptPasswordEncoder().encode(user.getPassword()), user.getAuthorities());
     }
 }
