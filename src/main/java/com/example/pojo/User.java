@@ -2,6 +2,7 @@ package com.example.pojo;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -17,7 +18,7 @@ import java.util.Collection;
 import java.util.List;
 
 @TableName("sys_user")
-public class User implements UserDetails {
+public class User extends Model<User> implements UserDetails {
     @TableId
     private String id;// uuid;
     private String username;
