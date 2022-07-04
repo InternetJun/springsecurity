@@ -1,14 +1,18 @@
 package com.example.config;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 @Data
 @Component
-@Configuration("swagger")
+@Configuration
 public class SwaggerProperties {
+    @Value("${swagger.applicationName}")
     private String applicationName;
+    @Value("${swagger.applicationDescription}")
     private String applicationDescription;
+    @Value("${swagger.applicationVersion}")
     private String applicationVersion;
 }

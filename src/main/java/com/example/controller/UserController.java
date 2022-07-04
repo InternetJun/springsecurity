@@ -1,7 +1,6 @@
 package com.example.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.example.mapper.UserMapper;
 import com.example.pojo.User;
 import io.swagger.annotations.Api;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.security.Principal;
 import java.util.UUID;
 
 @Controller
@@ -45,5 +45,11 @@ public class UserController {
         jsonObject.put("result", user);
         jsonObject.put("status", 200);
         return jsonObject;
+    }
+
+    @ApiOperation(value = "", notes = "获取用户信息")
+    @RequestMapping(value = "/getUser", method= RequestMethod.POST)
+    public Principal getCurrentUser(Principal principal) {
+        return principal;
     }
 }

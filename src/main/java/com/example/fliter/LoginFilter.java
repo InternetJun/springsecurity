@@ -27,7 +27,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             throw new AuthenticationServiceException(
                     "Authentication method not supported: " + request.getMethod());
         }
-        String verify_code = (String) request.getSession().getAttribute("verify_code");
+//        String verify_code = (String) request.getSession().getAttribute("verify_code");
         if (request.getContentType().contains(MediaType.APPLICATION_JSON_VALUE)
                 || request.getContentType().contains(MediaType.APPLICATION_JSON_UTF8_VALUE)) {
             Map<String, String> loginData = new HashMap<>();
@@ -35,8 +35,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                 loginData = new ObjectMapper().readValue(request.getInputStream(), Map.class);
             } catch (IOException e) {
             } finally {
-                String code = loginData.get("code");
-                checkCode(response, code, verify_code);
+//                String code = loginData.get("code");
+//                checkCode(response, code, verify_code);
             }
             String username = loginData.get(getUsernameParameter());
             String password = loginData.get(getPasswordParameter());
@@ -55,7 +55,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             sessionRegistry.registerNewSession(request.getSession(true).getId(), principal);
             return this.getAuthenticationManager().authenticate(authRequest);
         } else {
-            checkCode(response, request.getParameter("code"), verify_code);
+//            checkCode(response, request.getParameter("code"), verify_code);
             return super.attemptAuthentication(request, response);
         }
     }

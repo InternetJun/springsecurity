@@ -1,5 +1,6 @@
 package com.example.pojo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
@@ -8,6 +9,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,10 +31,31 @@ public class User extends Model<User> implements UserDetails {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)		// 反序列化
     @JsonSerialize(using = LocalDateTimeSerializer.class)		// 序列化
     private LocalDateTime addTime;
+    @TableField(exist = false)
     private List<Role> roles;
     private String rid;
     //对系统安全处理的字段
+    @Getter(value = AccessLevel.NONE)
     private Boolean enabled;
+    private String phone;
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    private String email;
 
     @Override
     @JsonIgnore
@@ -119,10 +144,6 @@ public class User extends Model<User> implements UserDetails {
 
     public void setRid(String rid) {
         this.rid = rid;
-    }
-
-    public Boolean getEnabled() {
-        return enabled;
     }
 
     public void setEnabled(Boolean enabled) {

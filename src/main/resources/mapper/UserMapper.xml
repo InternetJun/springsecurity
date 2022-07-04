@@ -26,4 +26,12 @@
     <select id="loadUserByUsername" resultMap="BaseResultMap">
         select * from sys_user where username = #{username}
     </select>
+
+    <insert id="insertUser" parameterType="com.example.pojo.User">
+        insert into sys_user (id, username, password, rid, image, add_time, enabled, phone, email)
+        values (#{id,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+                #{rid,jdbcType=VARCHAR}, #{image,jdbcType=VARCHAR}, #{addTime, jdbcType=TIMESTAMP}, #{enabled,jdbcType=BIT},
+                #{phone, jdbcType=VARCHAR}, #{email, jdbcType=VARCHAR}
+                )
+    </insert>
 </mapper>

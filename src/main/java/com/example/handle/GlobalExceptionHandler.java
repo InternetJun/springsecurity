@@ -33,10 +33,10 @@ public class GlobalExceptionHandler {
      *            处理其他异常
      *
      */
-    @ExceptionHandler(value = Exception.class)
-    public AjaxResult exceptionHandler( Exception e) {
-        log.error(e.getMessage(), e);
-        return AjaxResult.otherError(ErrorEnum.INTERNAL_SERVER_ERROR);
-    }
+//    @ExceptionHandler(value = Exception.class)
+//    public AjaxResult exceptionHandler( Exception e) {
+//        log.error(e.getMessage(), e);
+//        return AjaxResult.otherError(ErrorEnum.INTERNAL_SERVER_ERROR);
+//    }
 
 }

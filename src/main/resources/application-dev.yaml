@@ -12,14 +12,14 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
 #    Java Persistence API
 #    缓存数据
-#  redis:
-#    host: 192.168.219.128
-#    port: 6379
-#    database: 1
+  redis:
+    host: 192.168.159.100
+    port: 6379
+    database: 0
 swagger:
-  application-name: securityDemo
-  application-version: 1.0
-  application-description: springfox swagger 3.0整合Demo
+  applicationName: securityDemo
+  applicationVersion: 1.0
+  applicationDescription: demo登录
 
 mybatisplus:
   enabled: true
