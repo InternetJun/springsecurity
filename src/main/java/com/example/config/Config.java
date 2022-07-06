@@ -82,7 +82,7 @@ public class Config extends WebSecurityConfigurerAdapter {
 //                .addFilterAfter(loginFilter(), LoginFilter.class);
 
         http.authorizeRequests()
-                .antMatchers("/login", "/verifyCode", "/doLogin", "/oauth/authorize")
+                .antMatchers("/login", "/verifyCode", "/doLogin", "/oauth/*")
                 .permitAll()
                 // 配置跨域问题和
 //                .antMatchers("/oauth/*", "/oauth/token")
