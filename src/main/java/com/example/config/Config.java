@@ -1,19 +1,13 @@
 package com.example.config;
 
-import com.example.fliter.LoginFilter;
-//import com.example.fliter.VerificationCodeFilter;
-import com.example.model.RespBean;
-import com.example.oauth.UserNameAuthenticationProvider;
-import com.example.pojo.User;
+import com.example.config.resource.FilterIgnoreConfig;
 import com.example.service.UserDetailServiceImpl;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.authentication.*;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -21,14 +15,9 @@ import org.springframework.security.config.annotation.web.configurers.Expression
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.session.ConcurrentSessionControlAuthenticationStrategy;
-
-import java.io.PrintWriter;
 
 @Configuration
 @Order(1)
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class Config extends WebSecurityConfigurerAdapter {
 
     //    @Autowired
@@ -47,6 +36,9 @@ public class Config extends WebSecurityConfigurerAdapter {
      */
     @Autowired
     private UserDetailServiceImpl userDetailServiceImpl;
+
+    @Autowired
+    private FilterIgnoreConfig filterIgnoreConfig;
 
     @Bean
     PasswordEncoder passwordEncoder() {
@@ -68,34 +60,71 @@ public class Config extends WebSecurityConfigurerAdapter {
 //                .and().csrf().disable();
 //    }
 
+//    @Override
+//    public void configure(WebSecurity web) throws Exception {
+//        // web.ignoring是直接绕开spring security的所有filter，直接跳过验证
+//        web.ignoring().antMatchers("/v1/**");
+//
+//    }
+
 
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
+        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry = http
+                .authorizeRequests();
+
+        //不需要保护的资源路径允许访问
+        for (String url : filterIgnoreConfig.getUrls()) {
+            registry.antMatchers(url).permitAll();
+        }
+        //允许跨域请求的OPTIONS请求
+        registry.antMatchers(HttpMethod.OPTIONS)
+                .permitAll();
+        // 任何请求需要身份认证
+        registry.and()
+                .authorizeRequests()
+                .anyRequest()
+                .authenticated()
+                // 关闭跨站请求防护及不使用session
+                .and()
+                .csrf()
+                .disable();
+
+        //测试功能作用==========================
         //对防火的关闭和跨域的实现。
-        http.cors()
-            .and()
-            .csrf().disable();
+//        http.cors()
+//            .and()
+//            .csrf().disable();
 //        HttpSecurity httpSecurity = http.addFilterBefore(verificationCodeFilter, UsernamePasswordAuthenticationFilter.class);
         //自定义提供授权！
 //        http.authenticationProvider(new UserNameAuthenticationProvider())
 //                .addFilterAfter(loginFilter(), LoginFilter.class);
-
-        http.authorizeRequests()
-                .antMatchers("/login", "/verifyCode", "/doLogin", "/oauth/*")
-                .permitAll()
-                // 配置跨域问题和
-//                .antMatchers("/oauth/*", "/oauth/token")
-                .anyRequest().authenticated()
-                .and()
-                .formLogin()
-                .loginPage("/login.html")
-                .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/main.html")
-                .permitAll()
-                .and()
-                .csrf().disable();
-
+//        http.headers().frameOptions().disable();
+//        ExpressionUrlAuthorizationConfigurer<HttpSecurity>
+//                .ExpressionInterceptUrlRegistry registry = http
+//                .authorizeRequests();
+//        filterIgnoreConfig.getUrls()
+//                .forEach(url->registry.antMatchers(url).permitAll());
+//
+//        /* Can't configure antMatchers after anyRequest*/
+//        registry
+//                // 内部放行
+////                .antMatchers("/login", "/verifyCode", "/doLogin", "/oauth/*")
+////                .permitAll()
+//                // swagger都放行
+////                .antMatchers("/swagger-resources/**", "/swagger-ui/**", "/**/api-docs").anonymous()
+//                .anyRequest().authenticated()
+////                .and()
+////                .formLogin()
+////                .loginPage("/login.html")
+////                .loginProcessingUrl("/login")
+////                .defaultSuccessUrl("/main.html")
+////                .permitAll()
+//                .and()
+//                .csrf().disable()
+//                .cors();
 //            .authorizeRequests()
 //            .antMatchers("/login.html","/login","/doLogin","/verifyCode", "/oauth/**", "/authentication/require")
 //            .permitAll()
@@ -124,16 +153,52 @@ public class Config extends WebSecurityConfigurerAdapter {
     //静态资源配置,swagger测试类，登录注册的一些接口
     @Override
     public void configure(WebSecurity web) throws Exception {
+//        web.ignoring().antMatchers("/v1/**");
         //swagger2所需要用到的静态资源，允许访问
         web.ignoring().antMatchers("/v2/api-docs",
                 "/swagger-resources/configuration/ui",
                 "/swagger-resources",
                 "/swagger-resources/configuration/security",
-                "/swagger-ui.html");
+                "/swagger-ui/*");
         web.ignoring().antMatchers("/css/**", "/js/**", "/swagger-ui/**", "/v3/api-docs", "/img/**", "/fonts/**"
                 , "/favicon.ico", "/verifyCode", "/user/register", "/login.html");
 
     }
+
+//    @Bean
+//    public AccessDecisionManager accessDecisionManager() {
+//        List<UrlGrantedAuthority> collect = menuService
+//                .listOpen()
+//                .stream()
+//                .map(m -> new UrlGrantedAuthority(m.getUrl()))
+//                .collect(toList());
+//
+//        List<AccessDecisionVoter<? extends Object>> decisionVoters
+//                = Arrays.asList(
+//                new WebExpressionVoter(),
+//                new UrlMatchVoter(collect));
+//        return new UnanimousBased(decisionVoters);
+//    }
+
+    /**
+     * 跨域请求配置
+     *
+     * @param properties 配置属性文件名
+     * @return
+     */
+//    @Bean
+//    public CorsConfigurationSource corsConfigurationSource(CorsProperties properties) {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.setAllowedOrigins(properties.getAllowedOrigins());
+//        configuration.setAllowedMethods(properties.getAllowedMethods());
+//        configuration.setAllowCredentials(properties.getAllowCredentials());
+//        configuration.setAllowedHeaders(properties.getAllowedHeaders());
+//        configuration.setExposedHeaders(properties.getExposedHeaders());
+//        configuration.setMaxAge(properties.getMaxAge());
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//        return source;
+//    }
 
 //    @Bean
 //     LoginFilter loginFilter() throws Exception {
