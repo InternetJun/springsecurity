@@ -39,7 +39,8 @@ public class SequenceZero {
     public void getSuccessiveSequence(String s) {
         ArrayList<int[]> resultNormal = new ArrayList<>();
         ArrayList<int[]> resultBad = new ArrayList<>();
-        String allOneRegex = "[1]+[0]";
+        // 一个数字多余2个还有后面是0或2或3结尾的字串，可以是0个，也可以是1个。
+        String allOneRegex = "[1]{2,}[0\\|2\\|3]?";
         String allZeroRegex = "[0]+[1]";
         Pattern compileOne = Pattern.compile(allOneRegex);
         Pattern compileZero = Pattern.compile(allZeroRegex);
